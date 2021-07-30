@@ -36,7 +36,7 @@ if ($accion === 'crear') {
         $conn->close();
     } catch (Exception $e) {
         $respuesta = array(
-            'pass' => $e->getMessage()
+            'error' => $e->getMessage()
         );
     }
 
@@ -85,7 +85,7 @@ if ($accion === 'login') {
         $conn->close();
     } catch (Exception $e) {
         $respuesta = array(
-            'pass' => $e->getMessage()
+            'error' => $e->getMessage()
         );
     }
 

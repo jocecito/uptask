@@ -1,13 +1,29 @@
-<?php include 'inc/funciones/sesiones.php'; ?>
-<?php include 'inc/templates/header.php'; ?>
-<?php include 'inc/templates/barra.php'; ?>
+<?php
+include 'inc/funciones/sesiones.php';
+include 'inc/templates/header.php';
+include 'inc/templates/barra.php';
+
+// Obtener el ID de la URL
+if (isset($_GET['id_proyecto'])) {
+    $id_proyecto = $_GET['id_proyecto'];
+} else {
+    $proyecto = '';
+    $id_proyecto = '';
+}
+?>
 
 
-    <div class="contenedor">
+<div class="contenedor">
     <?php include 'inc/templates/sidebar.php' ?>
-        <main class="contenido-principal">
+    <main class="contenido-principal">
+        <?php $proyecto = obtenerNombreProyecto($id_proyecto);
+        if ($proyecto) : ?>
             <h1>
-                <span>Diseño de Página Web</span>
+
+                <?php foreach ($proyecto as $nombre) : ?>
+                    <span><?php echo $nombre['nombre']; ?></span>
+                <?php endforeach; ?>
+
             </h1>
 
             <form action="#" class="agregar-tarea">
@@ -16,28 +32,47 @@
                     <input type="text" placeholder="Nombre Tarea" class="nombre-tarea">
                 </div>
                 <div class="campo enviar">
-                    <input type="hidden" id="id_proyecto" value="id_proyecto">
+                    <input type="hidden" id="id_proyecto" value="<?php echo $id_proyecto; ?>">
                     <input type="submit" class="boton nueva-tarea" value="Agregar">
                 </div>
             </form>
 
-
-
             <h2>Listado de tareas:</h2>
 
-            <div class="listado-pendientes">
-                <ul>
-
-                    <li id="tarea:<?php echo $tarea['id'] ?>" class="tarea">
-                        <p>Cambiar el Logotipo</p>
+        <div class="listado-pendientes">
+            <ul>
+                <?php $tareas = obtenerTareasProyecto($id_proyecto); ?>
+                <?php if($tareas->num_rows > 0) { ?>
+                    <?php foreach($tareas as $tarea): ?>
+                        <li id="tarea:<?php echo $tarea['id'] ?>" class="tarea">
+                        <p><?php echo $tarea['nombre']; ?></p>
                         <div class="acciones">
-                            <i class="far fa-check-circle"></i>
+                            <i class="far fa-check-circle <?php echo ($tarea['estado'] === '1' ? 'completo' : '') ?>"></i>
                             <i class="fas fa-trash"></i>
                         </div>
                     </li>
-                </ul>
-            </div>
-        </main>
+
+                    <?php endforeach; ?>
+                <?php } else { echo "<p class='lista-vacia'>No hay tareas en este proyecto</p>" ?>
+                    
+                <?php  } ?>
+            </ul>
+        </div>
+
+        <?php else :
+            echo "<h2>Selecciona un proyecto para ver las tareas pendientes</h2>";
+        endif;
+        ?>
+        <?php if($proyecto) { ?>
+            <div class="avance">
+    <h2>Avance del Proyecto</h2>
+    <div class="barra-avance" id="barra-avance">
+        <div id="porcentaje" class="porcentaje"></div>
     </div>
-    <!--.contenedor-->
-    <?php include 'inc/templates/footer.php'; ?>
+</div>
+        <?php } ?>
+        
+    </main>
+</div>
+<!--.contenedor-->
+<?php include 'inc/templates/footer.php'; ?>
